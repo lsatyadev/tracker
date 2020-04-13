@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <title>Hello, world!</title>
+  </head>
+  <body>
+  	<div style="container">
+  		<nav class="navbar-vertical navbar navbar-dark bg-dark navbar-expand-xl">
+  			  <a class="navbar-brand" href="#">Status Tracking</a>
+			  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+			    <span class="navbar-toggler-icon"></span>
+			  </button>
+			  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+			    <ul class="navbar-nav">
+			      <li class="nav-item">
+			        <a class="nav-link active" href="#"><i class="fa fa-tachometer" aria-hidden="true"></i>&nbsp; Dashboard</a>
+			      </li>
+			    </ul>
+			  </div>
+  		</nav>
+  		<div class="content bg-light">
+			<div class="py-md-5 px-md-3">
+				<div class="h-md-100 card">
+					<div class="card-head mt-3 px-md-3">
+                        <div class="alert alert-success alert-dismissible fade show" th:if="${ticketSaved}">
+                            <strong>Success!</strong> Ticket created/updated successfully.
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        </div>
+                        <div class="alert alert-success alert-dismissible fade show" th:if="${ticketDeleted}">
+                            <strong>Success!</strong> Ticket deleted successfully.
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        </div>
+						<a class="btn btn-primary" th:href="@{/renderaddnew}"><i class="fa fa-plus"></i> Add New Item</a>
+					</div>
+					<div class="card-body">
+						<table class="table table-hover table-sm" id="mydatatable">
+							<thead>
+							    <tr>
+							      <th scope="col" style="width: 2%">#</th>
+							      <th scope="col" style="width: 8%">Ticket#</th>
+							      <th scope="col" style="width: 7%">Date</th>
+							      <th scope="col" style="width: 6%">Status</th>
+							      <th scope="col">Summary</th>
+							      <th scope="col" style="width: 10%">Primary Owner</th>
+							      <th scope="col" style="width: 10%">Backup Owner</th>
+							      <th scope="col" style="width: 6%">Actions</th>
+							    </tr>
+							</thead>
+							<tbody>
+								<tr th:each="ticket,iter: ${ticketList}">
+									<th th:text="${iter.index + 1}" />
+									<td th:text="${ticket.ticketNumber}" />
+									<td th:text="${#dates.format(ticket.date, 'dd-MMM-yyyy')}" />
+
+									<td th:switch="${ticket.status.toString()}" >
+										<span th:case="'New'" class="badge badge-dark" th:text="${ticket.status}" />
+										<span th:case="'InProgress'" class="badge badge-warning" th:text="${ticket.status}" />
+										<span th:case="'Closed'" class="badge badge-success" th:text="${ticket.status}" />
+									</td>
+									<td th:text="${ticket.summary}" />
+									<td th:text="${ticket.primaryOwner}" />
+									<td th:text="${ticket.backupOwner}" />
+									<td>
+										<a class="btn btn-info btn-sm" th:href="@{'/editticket/' + ${ticket.ticketNumber}}">
+											<i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+										</a>&nbsp;
+										<a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" th:attr="data-whatever=${ticket.ticketNumber}">
+											<i class="fa fa-trash-o" aria-hidden="true"></i>
+										</a>&nbsp;
+									</td>
+								</tr>
+							  </tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+  		</div>
+  	</div>
+
+    <!-- delete model window -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModelTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Do you want to delete ticket?
+                </div>
+                <div class="modal-footer">
+                    <form name="deleteForm" id="deleteForm" action="/deleteticket" method="POST">
+                        <input type="hidden" name="ticketNumber" it="ticketNumber" value="test">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                        <button type="submit" class="btn btn-danger">Yes, delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script th:src="@{/js/main.js}"></script>
+  </body>
+</html>
